@@ -22,11 +22,5 @@ debug.html
 debug.pdf
 *.pdf
 
-# Project directories (likely containing backend logic or configs)
-config/
-modules/
-routes/
-utils/
-
 # Test files
 testgee.js
