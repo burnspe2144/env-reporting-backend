@@ -1,40 +1,38 @@
-const express = require("express");  // Import Express
-const cors = require("cors");  // Import CORS for cross-origin requests
-const pg = require("pg");  // Import PostgreSQL client
-require("dotenv").config();  // Load environment variables
+const express = require("express");
+const cors = require("cors");
+require("dotenv").config({ path: __dirname + '/.env' });
 
-const app = express();  // ✅ Define the Express app
+const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 
-// PostgreSQL Client Setup
-const pool = new pg.Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: {
-        rejectUnauthorized: false,  // Required for Railway hosted PostgreSQL
-    },
-});
+// Routes
+const geeRoutes = require("./routes/gee");
+const dataRoutes = require("./routes/data");
+const pdfRoutes = require("./routes/pdf");
+const importRoutes = require("./routes/import");
+const figureRoutes = require("./routes/figures"); // Ensure this is included
 
-// ✅ Basic API Route
+app.use("/api/gee", geeRoutes);
+app.use("/api/data", dataRoutes);
+app.use("/api/lab-results/pdf", pdfRoutes);
+app.use("/api/import", importRoutes);
+app.use("/api/figures", figureRoutes); // Mount the figures route
+
+// Root endpoint
 app.get("/", (req, res) => {
-    res.send("Server is running!");
+  res.json({ data: "Server is running!", error: null });
 });
 
-// ✅ API Route for Screening Levels
-app.get("/screening_levels", async (req, res) => {
-    try {
-        const result = await pool.query("SELECT * FROM screening_levels"); // Ensure this table exists
-        res.json(result.rows);
-    } catch (error) {
-        console.error("Database query error:", error);
-        res.status(500).json({ error: "Internal Server Error" });
-    }
-});
+// Debug environment variables
+console.log("Environment variables loaded:");
+console.log("DATABASE_URL:", process.env.DATABASE_URL);
+console.log("PORT:", process.env.PORT);
+console.log("GEE_PRIVATE_KEY:", process.env.GEE_PRIVATE_KEY ? "Loaded" : "Not loaded");
 
-// Start the server
 app.listen(PORT, () => {
-    console.log(`✅ Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
