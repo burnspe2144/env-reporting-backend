@@ -21,6 +21,14 @@ projects/
 debug.html
 debug.pdf
 *.pdf
+debug_*.html
+debug_*.png
+debug_*.pdf
 
 # Test files
 testgee.js
+test-gee-auth.js
+testDB.js
+
+# Test coverage
+coverage/
